@@ -1,0 +1,88 @@
+pipeline {
+    agent any
+
+    environment {
+        // 도커 관련 설정
+        DOCKER_IMAGE = credentials('SPRING_IMAGE')
+        DOCKER_CONTAINER = credentials('SPRING_CONTAINER')
+        DOCKER_PORT = credentials('SPRING_PORT')
+        DOCKER_PATH = credentials('DOCKER_PATH')
+
+        // EC2 관련 설정
+        EC2_USER = credentials('EC2_USER')
+        EC2_IP = credentials('EC2_IP')
+        SSH_KEY = credentials('SSH_KEY')
+
+        // 데이터베이스 자격 증명
+        DB_URL = credentials('DB_URL')
+        DB_USERNAME = credentials('DB_USERNAME')
+        DB_PASSWORD = credentials('DB_PASSWORD')
+
+        // Java 및 Gradle 경로 설정
+        JAVA_HOME = '/opt/java/openjdk'
+        GRADLE_HOME = '/opt/gradle/gradle-8.13'
+        PATH = "${JAVA_HOME}/bin:${GRADLE_HOME}/bin:${env.PATH}"
+    }
+
+    tools {
+        jdk 'JDK17'
+        gradle 'Gradle 8.13'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                echo '저장소 복제 중...'
+                checkout scm
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                echo 'Gradle로 애플리케이션 빌드 중...'
+                dir('back/cellcheck') {
+                    sh 'chmod +x ./gradlew'
+                    sh './gradlew clean build -x test'
+                    sh 'ls -la build/libs'
+                }
+            }
+        }
+
+        stage('Deploy with Docker Compose') {
+            steps {
+                echo 'Docker Compose로 배포 중...'
+
+                //docker_path 경로확인
+                sh 'echo "DOCKER_PATH = ${DOCKER_PATH}"'
+                //sh 'find / -name app.jar -type f 2>/dev/null'
+
+                // JAR 파일을 Docker Compose 볼륨 경로로 복사
+                sh 'mkdir -p /home/ubuntu/docker-services/springboot/app'
+                sh 'cp back/cellcheck/build/libs/cellcheck-0.0.1-SNAPSHOT.jar /home/ubuntu/docker-services/springboot/app/app.jar'
+
+                // 파일 권한 설정
+                sh 'chmod 644 /home/ubuntu/docker-services/springboot/app/app.jar'
+
+                sh '''
+                    cd /home/ubuntu/docker-services
+                    /usr/bin/docker stop springboot-app || true
+                    /usr/bin/docker rm springboot-app || true
+                    /usr/local/bin/docker-compose up -d springboot
+                '''
+
+
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '배포가 성공적으로 완료되었습니다!'
+        }
+        failure {
+            echo '배포에 실패했습니다.'
+        }
+    }
+}
+
+

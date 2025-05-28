@@ -1,0 +1,62 @@
+server:
+  port: ${SERVER_PORT}
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_ID}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    open-in-view: false
+
+logging:
+  level:
+    com.board: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration:
+    access: 3600000 #1시간
+    refresh: 604800000
+
+url:
+  http: ${HTTP_URL}
+  https: ${HTTPS_URL}
+
+#oauth2:
+#  # 추후 프론트 서버로 리다이렉트
+#  authorizedRedirectUris:
+#      -
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha # 알파벳순
+    operations-sorter: alpha
+  packages-to-scan: com.ssafy.cellcheck
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+# Swagger 인증정보
+swagger:
+  auth:
+    username: ${SWAGGER_NAME}
+    password: ${SWAGGER_PWD}
+
+# Mqtt 설정들
+mqtt:
+  broker: ${MQTT_BROKER}
+  username: ${MQTT_USERNAME}
+  password: ${MQTT_PASSWORD}
+  caCertPath: ${MQTT_CERTPATH}

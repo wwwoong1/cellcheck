@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd"
+             schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>jetson_ec2_mqtt_comm</name>
+  <version>0.0.1</version>
+  <description>ROS2 package for publishing telemetry data over MQTT</description>
+  <maintainer email="bup553@naver.com">hongfa</maintainer>
+  <license>Apache-2.0</license>
+
+  <!-- 실제 사용 중인 의존성만 남겼습니다 -->
+  <depend>rclpy</depend>
+  <exec_depend>paho-mqtt</exec_depend>
+  <exec_depend>psutil</exec_depend>
+  <depend>std_msgs</depend>
+  
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

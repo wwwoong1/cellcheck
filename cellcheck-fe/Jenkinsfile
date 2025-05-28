@@ -1,0 +1,74 @@
+pipeline {
+    agent any
+    tools {
+        nodejs 'node18'
+    }
+    environment {
+        GIT_CREDENTIALS_ID = 'GitLab-PAT'
+        FRONT_PROJECT_DIR = "cellcheck-fe"
+        DIST_DIR = "cellcheck-fe/dist"
+        NGINX_HTML_DIR = "/home/ubuntu/docker-services/nginx/html"
+    }
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: 'develop-fe']],
+                    userRemoteConfigs: [[
+                        url: 'https://lab.ssafy.com/s12-final/S12P31D106',
+                        credentialsId: "${GIT_CREDENTIALS_ID}" // 'GitLab-PAT' ID 사용
+                    ]]
+                ])
+                sh 'echo "✅ 코드 체크아웃 완료"'
+            }
+        }
+
+        
+        stage('Build Frontend') {
+            steps {
+                dir("${FRONT_PROJECT_DIR}") {
+                    sh '''
+                    echo "✅ 프론트엔드 빌드 시작"
+                    rm -rf node_modules dist
+                    npm install --legacy-peer-deps
+                    npm run build
+                    echo "✅ 프론트엔드 빌드 완료"
+                    '''
+                }
+            }
+        }
+        
+        stage('Deploy to Nginx') {
+            steps {
+                sh """
+                echo "[INFO] Nginx 디렉토리 생성..."
+                mkdir -p ${NGINX_HTML_DIR}
+                
+                echo "[INFO] 기존 파일 삭제 중..."
+                rm -rf ${NGINX_HTML_DIR}/*
+                
+                echo "[INFO] 새로운 빌드 파일 복사 중..."
+                cp -r ${DIST_DIR}/* ${NGINX_HTML_DIR}/
+                
+                echo "[INFO] 권한 설정..."
+                chmod -R 755 ${NGINX_HTML_DIR}
+                
+                echo "[INFO] Nginx 컨테이너 재시작 중..."
+                cd /home/ubuntu/docker-services
+                docker restart nginx
+                echo "[INFO] 배포 완료 ✅"
+                """
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo "🎉 배포가 성공적으로 완료되었습니다!"
+        }
+        failure {
+            echo "❌ 배포 중 오류가 발생했습니다."
+        }
+    }
+}

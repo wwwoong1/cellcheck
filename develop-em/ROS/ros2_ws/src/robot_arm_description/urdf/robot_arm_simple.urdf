@@ -1,0 +1,364 @@
+<?xml version="1.0"?>
+<robot name="robot_arm">
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+  
+  <material name="blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+  
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  
+  <material name="red">
+    <color rgba="0.8 0 0 1"/>
+  </material>
+
+  <!-- 더미 링크 (KDL 호환성 위한 root 링크) -->
+  <link name="world"/>
+
+  <!-- 고정된 베이스를 더미 링크에 연결 (천장 마운트) -->
+  <joint name="world_to_base" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.3" rpy="3.14159 0 0"/>  <!-- X축 기준 180도 회전 (π) -->
+  </joint>
+
+  <!-- 고정된 베이스 -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.08 0.08 0.01"/>
+      </geometry>
+      <material name="black"/>
+      <origin xyz="0 0 0.005" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.08 0.08 0.01"/>
+      </geometry>
+      <origin xyz="0 0 0.005" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      <origin xyz="0 0 0.005" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 첫 번째 관절 (바닥과 연결된 회전 축) - x축 회전 -->
+  <joint name="base_to_servo1" type="revolute">
+    <parent link="base_link"/>
+    <child link="servo1_link"/>
+    <origin xyz="0 0 0.01" rpy="-1.5708 0 0"/>  <!-- Z축 기준 90도 회전 -->
+    <axis xyz="1 0 0"/>  <!-- X축 중심 회전 (앞뒤로 움직임) -->
+    <limit lower="0" upper="3.14159" effort="10" velocity="1"/>  <!-- 0~180도 -->
+  </joint>
+
+  <!-- 첫 번째 서보모터 링크 -->
+  <link name="servo1_link">
+    <visual>
+      <geometry>
+        <box size="0.04 0.04 0.038"/>
+      </geometry>
+      <material name="blue"/>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.04 0.04 0.038"/>
+      </geometry>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.055"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 첫 번째 팔 링크 (첫 번째 모터에서 두 번째 모터까지의 연결) -->
+  <joint name="servo1_to_upper_arm" type="fixed">
+    <parent link="servo1_link"/>
+    <child link="upper_arm_link"/>
+    <origin xyz="0 0 0.038" rpy="0 0 0"/>
+  </joint>
+
+  <link name="upper_arm_link">
+    <visual>
+      <geometry>
+        <box size="0.06 0.03 0.096"/>
+      </geometry>
+      <material name="white"/>
+      <origin xyz="0 0 0.048" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.06 0.03 0.096"/>
+      </geometry>
+      <origin xyz="0 0 0.048" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0.048" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 두 번째 관절 (팔 마디 연결) - x축 회전 -->
+  <joint name="upper_arm_to_servo2" type="revolute">
+    <parent link="upper_arm_link"/>
+    <child link="servo2_link"/>
+    <origin xyz="0 0 0.1" rpy="0.52360 0 0"/>
+    <axis xyz="-1 0 0"/>  <!-- X축 반대 방향 회전 -->
+    <limit lower="0" upper="3.14159" effort="10" velocity="1"/>  <!-- 0~180도 -->
+  </joint>
+
+  <!-- 두 번째 서보모터 링크 -->
+  <link name="servo2_link">
+    <visual>
+      <geometry>
+        <box size="0.04 0.04 0.038"/>
+      </geometry>
+      <material name="blue"/>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.04 0.04 0.038"/>
+      </geometry>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.055"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 두 번째 팔 링크 (두 번째 모터에서 세 번째 모터까지의 연결) -->
+  <joint name="servo2_to_forearm" type="fixed">
+    <parent link="servo2_link"/>
+    <child link="forearm_link"/>
+    <origin xyz="0 0 0.038" rpy="0 0 0"/>
+  </joint>
+
+  <link name="forearm_link">
+    <visual>
+      <geometry>
+        <box size="0.04 0.03 0.013"/>
+      </geometry>
+      <material name="white"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.04 0.03 0.013"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.08"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 세 번째 관절 (손목 회전) - z축 회전 -->
+  <joint name="forearm_to_servo3" type="revolute">
+    <parent link="forearm_link"/>
+    <child link="servo3_link"/>
+    <origin xyz="0 0 0.0065" rpy="0 0 1.5708"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="0" upper="3.14159" effort="10" velocity="1"/>
+  </joint>
+
+  <!-- 세 번째 서보모터 링크 (손목) -->
+  <link name="servo3_link">
+    <visual>
+      <geometry>
+        <box size="0.04 0.04 0.019"/>
+      </geometry>
+      <material name="blue"/>
+      <origin xyz="0 0 0.0065" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.04 0.04 0.019"/>
+      </geometry>
+      <origin xyz="0 0 0.0065" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.055"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0.0065" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 손목에서 집게 연결 부분 -->
+  <joint name="servo3_to_wrist" type="fixed">
+    <parent link="servo3_link"/>
+    <child link="wrist_link"/>
+    <origin xyz="0 0 0.013" rpy="0 0 0"/>
+  </joint>
+
+  <link name="wrist_link">
+    <visual>
+      <geometry>
+        <box size="0.03 0.03 0.005"/>
+      </geometry>
+      <material name="white"/>
+      <origin xyz="0 0 0.0025" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.03 0.03 0.005"/>
+      </geometry>
+      <origin xyz="0 0 0.0025" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.02"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0.0025" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 네 번째 관절 (집게 제어) - 집게 간격 직접 제어 -->
+  <joint name="wrist_to_servo4" type="fixed">
+    <parent link="wrist_link"/>
+    <child link="servo4_link"/>
+    <origin xyz="0 0 0.005" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 네 번째 서보모터 링크 (집게) -->
+  <link name="servo4_link">
+    <visual>
+      <geometry>
+        <box size="0.04 0.04 0.038"/>
+      </geometry>
+      <material name="blue"/>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.04 0.04 0.038"/>
+      </geometry>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.055"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0.019" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 집게 베이스 -->
+  <joint name="servo4_to_gripper_base" type="fixed">
+    <parent link="servo4_link"/>
+    <child link="gripper_base"/>
+    <origin xyz="0 0 0.038" rpy="0 0 1.5708"/>  <!-- 90도(π/2) 회전 -->
+  </joint>
+
+  <link name="gripper_base">
+    <visual>
+      <geometry>
+        <box size="0.03 0.03 0.01"/>
+      </geometry>
+      <material name="black"/>
+      <origin xyz="0 0 0.005" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.03 0.03 0.01"/>
+      </geometry>
+      <origin xyz="0 0 0.005" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.03"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0.005" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 집게 제어를 위한 가상 조인트 -->
+  <joint name="gripper_control" type="revolute">
+    <parent link="gripper_base"/>
+    <child link="virtual_gripper_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="0" upper="1.5708" effort="10" velocity="1"/>  <!-- 0~90도 -->
+  </joint>
+
+  <!-- 가상 링크 - 실제로 보이지 않음 -->
+  <link name="virtual_gripper_link">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 왼쪽 집게 -->
+  <joint name="gripper_base_to_left_finger" type="prismatic">
+    <parent link="gripper_base"/>
+    <child link="left_finger"/>
+    <origin xyz="0 0.015 0.0225" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.015" upper="0.015" effort="10" velocity="1"/>
+    <mimic joint="gripper_control" multiplier="-0.015" offset="0.015"/>  <!-- -0.015/1.0 ≈ -0.015 -->
+  </joint>
+
+  <link name="left_finger">
+    <visual>
+      <geometry>
+        <box size="0.01 0.01 0.045"/>
+      </geometry>
+      <material name="red"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.01 0.01 0.045"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.02"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!-- 오른쪽 집게 -->
+  <joint name="gripper_base_to_right_finger" type="prismatic">
+    <parent link="gripper_base"/>
+    <child link="right_finger"/>
+    <origin xyz="0 -0.015 0.0225" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/> <!-- 같은 방향으로 이동하지만 위치가 반대라서 벌어짐 -->
+    <limit lower="-0.015" upper="0.015" effort="10" velocity="1"/>
+    <mimic joint="gripper_control" multiplier="0.015" offset="-0.015"/>  <!-- 0.015/1.0 ≈ 0.015 -->
+  </joint>
+
+  <link name="right_finger">
+    <visual>
+      <geometry>
+        <box size="0.01 0.01 0.045"/>
+      </geometry>
+      <material name="red"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.01 0.01 0.045"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.02"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+</robot> 

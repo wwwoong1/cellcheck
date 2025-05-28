@@ -1,0 +1,29 @@
+/* src/styles/animations.css */
+@keyframes reveal-circle {
+  0% { width: 4000px; height: 4000px; opacity: 1; }
+  100% { width: 0; height: 0; opacity: 0; }
+}
+
+@keyframes circle-expand {
+  0% { width: 0; height: 0; opacity: 1; }
+  100% { width: 4000px; height: 4000px; opacity: 1; }
+}
+
+.circle-animation {
+  width: 4000px !important;
+  height: 4000px !important;
+  background-color: #111827 !important;
+  animation: reveal-circle 1.8s ease-in-out forwards !important;
+  box-shadow: 0 0 200px 100px rgba(255, 0, 0, 0.4) !important;
+}
+
+/* 카드 변형 효과 강화 */
+.transform.-skew-y-6 {
+  transform: skew(0, -6deg) !important;
+}
+
+@media (min-width: 640px) {
+  .sm\:-rotate-6 {
+    transform: rotate(-6deg) !important;
+  }
+}

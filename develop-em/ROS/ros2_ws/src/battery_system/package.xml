@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>battery_system</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="ssafy@todo.todo">ssafy</maintainer>
+  <license>TODO: License declaration</license>
+
+  <!--런타임 의존성-->
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <!-- 아두이노 인터페이스 패키지 의존성 추가 -->
+  <depend>arduino_interface</depend>
+  <depend>jetson_ec2_mqtt_comm</depend>
+  <depend>image_comm</depend>
+  <depend>serial_comm</depend>
+
+  <!--런치용(:노드를 구동하거나, 런치 파일에서 import 사용할 때만 필요할 때) 의존성-->
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+
+  <!-- launch 파일을 위한 의존성 추가 : ros2launch는 CLI툴 이름이고 ROS 패키지가 아니어서 선언할필요 없음.-->
+  <!-- <exec_depend>ros2launch</exec_depend> -->
+  <!-- 테스트 의존성 -->
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
