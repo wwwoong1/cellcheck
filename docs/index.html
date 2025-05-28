@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CellCheck – 폐건전지 분류 자동화 시스템</title>
+  <style>
+    body      { font-family: Arial,Helvetica,sans-serif; line-height:1.6; margin:0 auto; max-width:960px; padding:0 1.2rem; }
+    h1,h2,h3  { color:#2c3e50; margin-top:1.6rem; }
+    table     { width:100%; border-collapse:collapse; margin:1rem 0; }
+    th,td     { text-align:center; padding:6px; }
+    img       { max-width:100%; height:auto; border:0; }
+    img.w200  { width:200px; }
+    .badge    { vertical-align:middle; height:28px; }
+  </style>
+</head>
+<body>
+
+<h1>CellCheck – 폐건전지 분류 자동화 시스템</h1>
+
+<h2>📋 목차</h2>
+<ol>
+  <li><a href="#서비스소개">서비스 소개</a></li>
+  <li><a href="#팀원">팀원</a></li>
+  <li><a href="#주요기능">주요 기능</a></li>
+  <li><a href="#주요기술">주요 기술</a></li>
+  <li><a href="#산출물">산출물</a></li>
+</ol>
+
+<h2 id="서비스소개">🔋 서비스 소개</h2>
+<p><strong>프로젝트 기간 :</strong> 2025-04-14&nbsp;~&nbsp;2025-05-23 (6주)</p>
+
+<p><strong>SSAFY 12기 2학기 자율 프로젝트 – 임베디드</strong></p>
+<p><strong>CellCheck</strong>는 임베디드와 AI 기술을 이용해 관리자가 상주하지 않아도 폐건전지의 외관 검사·잔류 전하 측정·방전을 <em>전자동</em>으로 수행하는 시스템입니다. 이를 통해 폐건전지 화재 위험을 크게 줄이고, 관리자는 웹 대시보드로 원격 모니터링할 수 있습니다.</p>
+
+<h2 id="팀원">🤝 팀원</h2>
+<table>
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/강민석.png" alt="강민석" class="w200"></td>
+    <td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/김동욱.png" alt="김동욱" class="w200"></td>
+    <td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/김웅기.png" alt="김웅기" class="w200"></td>
+    <td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/류현석.png" alt="류현석" class="w200"></td>
+    <td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/이진형.png" alt="이진형" class="w200"></td>
+    <td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/황홍법.png" alt="황홍법" class="w200"></td>
+  </tr>
+  <tr>
+    <td>강민석<br>Infra / BE / FE</td>
+    <td>김동욱<br>Embedded</td>
+    <td>김웅기<br>AI / FE</td>
+    <td>류현석<br>Embedded</td>
+    <td>이진형<br>Embedded</td>
+    <td>황홍법<br>Embedded</td>
+  </tr>
+</table>
+
+<h2 id="주요기능">💻 주요 기능</h2>
+<p>아래 토글을 펼쳐 상세한 흐름도를 확인하세요.</p>
+
+<!-- 사용자 페이지 -->
+<details>
+<summary><strong>👤 사용자 페이지</strong></summary>
+<ul>
+<li>외관 검사 결과 &amp; 배터리 타입(AA/AAA/C/D) 표시</li>
+<li>방전 진행·잔량(SoC) 실시간 모니터링</li>
+<li>불량통/방전완료통 가득참 알림</li>
+<li>회로·실내 온도·쿨링팬 상태 모니터링</li>
+<li>공지사항 확인</li>
+</ul>
+</details>
+
+<!-- 관리자 페이지 -->
+<details>
+<summary><strong>🛠️ 관리자 페이지</strong></summary>
+<ul>
+<li>Jetson&nbsp;Nano CPU/SOC 온도 · 자원 사용률 모니터링</li>
+<li>배터리 처리 이력 조회</li>
+<li>사용자 계정 관리</li>
+<li>공지사항 등록</li>
+<li>통 가득참 알림 &amp; 조치</li>
+</ul>
+</details>
+
+<!-- 방전 흐름 -->
+<details>
+<summary><strong>🔋 방전 기능 흐름</strong></summary>
+<ol>
+<li>로봇팔 → 배터리를 방전 회로에 접촉</li>
+<li>INA219로 버스 전압·전류 측정</li>
+<li>I2C → 모니터링 아두이노 전달</li>
+<li>아두이노가 로드 전압 계산</li>
+<li>시리얼 → Jetson&nbsp;Nano 전송</li>
+<li>Jetson&nbsp;Nano가 SoC 계산 → MQTT로 서버 송신</li>
+<li>SoC ≤ 기준 → 방전 완료 메시지 → 컨트롤러 아두이노</li>
+<li>아두이노가 로봇팔 제어, 배터리 분리</li>
+</ol>
+</details>
+
+<!-- 과열 방지 -->
+<details>
+<summary><strong>🌡️ 과열 방지 흐름</strong></summary>
+<ol>
+<li>저항 온도 실시간 모니터링</li>
+<li>임계값 초과 → 릴레이로 쿨링팬 작동</li>
+<li>위험 온도 초과 → 회로 차단 &amp; 채널 전환</li>
+<li>온도 정상화 시 재연결</li>
+</ol>
+</details>
+
+<!-- 로봇팔 제어 -->
+<details>
+<summary><strong>🤖 로봇팔 방전·복귀 제어</strong></summary>
+<p><em>방전 제어</em></p>
+<ol>
+<li>카메라 bbox → 로봇팔 좌표계 변환</li>
+<li>역기구학으로 서보 각도 계산 (URDF)</li>
+<li>시리얼로 아두이노 전송 → 서보 순차 구동</li>
+</ol>
+<p><em>복귀 제어</em></p>
+<ol>
+<li>방전 완료 신호 수신</li>
+<li>초기값 각도로 서보 복귀</li>
+<li>복귀 완료 보고</li>
+</ol>
+</details>
+
+<h2 id="주요기술">🧑‍💻 주요 기술</h2>
+<ul>
+<li><strong>Embedded + AI</strong> 융합</li>
+<li><strong>Front-End</strong> – WebSocket · MQTT, Context&nbsp;API 전역 상태, 반응형 UI</li>
+<li><strong>Back-End</strong> – WebSocket 서버, MQTT 브로커, JWT 인증, 시계열 데이터 저장</li>
+<li><strong>AI</strong> – YOLOv8-seg, OpenCV 마스크→BBox 변환·비율 계산</li>
+</ul>
+
+<h2 id="산출물">📦 산출물</h2>
+
+<!-- 하드웨어 -->
+<details>
+<summary><strong>1️⃣ 하드웨어</strong></summary><br>
+<table>
+  <tr><th>#</th><th>사진</th><th>구성품</th><th>설명</th></tr>
+  <tr><td>0</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/20250521_091101.jpg" class="w200" alt="전체 시스템"></td><td>전체 시스템</td><td>주요 모듈 전경</td></tr>
+  <tr><td>1</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/20250520_230052.jpg" class="w200" alt="SMPS"></td><td>Power&nbsp;Supply</td><td>200&nbsp;W&nbsp;12&nbsp;V&nbsp;SMPS</td></tr>
+  <tr><td>2</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/20250520_230124.jpg" class="w200" alt="컨베이어"></td><td>컨베이어 / 스텝모터</td><td>이송 모듈 + 드라이버</td></tr>
+  <tr><td>3</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/20250520_230137.jpg" class="w200" alt="MG946R"></td><td>MG946R Servo</td><td>차단판&nbsp;A 구동</td></tr>
+  <tr><td>4</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/20250520_230200.jpg" class="w200" alt="Arduino Mega"></td><td>Arduino&nbsp;Mega</td><td>모터·센서 제어 MCU</td></tr>
+  <tr><td>5</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/20250520_230208.jpg" class="w200" alt="Servo & Actuator"></td><td>Servo + Actuator</td><td>차단판&nbsp;B &amp; 불량 배출</td></tr>
+  <tr><td>6</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/20250520_230213.jpg" class="w200" alt="Jetson Nano"></td><td>Jetson&nbsp;Nano</td><td>AI 추론 & 통합 제어</td></tr>
+  <tr><td>7</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/rn_image_picker_lib_temp_be76a430-e38f-4864-8238-da46ba066ec2.jpg" class="w200" alt="INA219"></td><td>Arduino + INA219 + GY-906 + Resistance</td><td>방전 회로 & 전류/전압 & 온도 측정</td></tr>
+  <tr><td>8</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/rn_image_picker_lib_temp_68d1294d-e077-4ac4-b647-e247a020d4a6.jpg" class="w200" alt="Relay"></td><td>Arduino + Relay</td><td>쿨링팬 전원 제어</td></tr>
+  <tr><td>9</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/rn_image_picker_lib_temp_81afe345-430e-4c29-ad36-3fde1b752b3c.jpg" class="w200" alt="Robot Arm"></td><td>4×MG996R Servo</td><td>4-DOF 알루미늄 로봇팔</td></tr>
+</table>
+</details>
+
+<!-- 시스템 문서 -->
+<details>
+<summary><strong>2️⃣ 시스템 문서</strong></summary><br>
+<table>
+  <tr><th>문서</th><th>미리보기</th></tr>
+  <tr><td>시스템 아키텍처</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/CC_시스템아키텍처.png" width="400" alt="시스템 아키텍처"></td></tr>
+  <tr><td>API 명세서</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/CC_API명세서.png" width="400" alt="API 명세서"></td></tr>
+  <tr><td>ERD</td><td><img src="https://raw.githubusercontent.com/wwwoong1/cellcheck/main/images/CC_ERD.png" width="400" alt="ERD"></td></tr>
+</table>
+</details>
+
+<footer style="margin:3rem 0 1rem;text-align:center;font-size:0.8rem;color:#888;">
+  © 2025 CellCheck Team
+</footer>
+
+</body>
+</html>
